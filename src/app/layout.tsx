@@ -1,14 +1,18 @@
-import type { Metadata } from "next";
 import "./globals.css";
+
 import { Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next";
+import { ReactQueryProvider } from "@/lib/query-client";
+
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
     template: "%s | Roteiro do produto",
     default: "Roteiro do produto",
   },
-  description: "Acompanhe o progresso do desenvolvimento de toda a nossa plataforma.",
+  description:
+    "Acompanhe o progresso do desenvolvimento de toda a nossa plataforma.",
 };
 
 const inter = Inter({
@@ -26,7 +30,9 @@ export default function RootLayout({
       <body
         className={`bg-navy-950 text-navy-50 antialiased ${inter.variable}`}
       >
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <ReactQueryProvider>
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </ReactQueryProvider>
       </body>
     </html>
   );
