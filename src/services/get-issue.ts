@@ -6,6 +6,8 @@ interface GetIssueProps {
 }
 
 export const getIssue = async ({ id }: GetIssueProps) => {
+  "use cache";
+
   try {
     const url = new URL(`/api/issues/${id}`, clientEnv.NEXT_PUBLIC_API_URL);
 
