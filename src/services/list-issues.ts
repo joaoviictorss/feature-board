@@ -1,11 +1,16 @@
 import { IssuesListResponseSchema } from "@/api/routes/list-issues";
 import { clientEnv } from "@/client-env";
+import { cacheLife } from "next/cache";
 
 interface ListIssuesProps {
   search?: string;
 }
 
 export const listIssues = async ({ search }: ListIssuesProps) => {
+  "use cache";
+
+  cacheLife("minutes");
+
   try {
     const url = new URL(`/api/issues`, clientEnv.NEXT_PUBLIC_API_URL);
 

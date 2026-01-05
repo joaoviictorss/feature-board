@@ -1,5 +1,6 @@
 import { CommentsListResponseSchema } from "@/api/routes/list-issue-comments";
 import { clientEnv } from "@/client-env";
+import { cacheLife, cacheTag } from "next/cache";
 
 interface ListIssueCommentsParams {
   issueId: string;
@@ -8,6 +9,11 @@ interface ListIssueCommentsParams {
 export const listIssueComments = async ({
   issueId,
 }: ListIssueCommentsParams) => {
+  "use cache";
+
+  cacheLife("minutes");
+  cacheTag(`issue-comments-${issueId}`);
+
   try {
     const url = new URL(
       `/api/issues/${issueId}/comments`,

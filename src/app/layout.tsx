@@ -22,8 +22,10 @@ const inter = Inter({
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="pt-BR">
@@ -31,7 +33,10 @@ export default function RootLayout({
         className={`bg-navy-950 text-navy-50 antialiased ${inter.variable}`}
       >
         <ReactQueryProvider>
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <NuqsAdapter>
+            {modal}
+            {children}
+          </NuqsAdapter>
         </ReactQueryProvider>
       </body>
     </html>
