@@ -17,7 +17,7 @@ interface CommentAvatarProps extends ComponentProps<typeof Image> {}
 
 export const CommentAvatar = ({ className, ...props }: CommentAvatarProps) => {
   return (
-    <Image className={twMerge("size-8 rounded-full", className)} {...props} />
+    <Image className={twMerge("size-8 rounded-full bg-navy-600", className)} {...props} />
   );
 };
 

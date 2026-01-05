@@ -1,16 +1,18 @@
-import { Button } from "@/components/button";
 import { getIssue } from "@/services/get-issue";
-import {
-  ArchiveIcon,
-  MessageCirclePlusIcon,
-  MoveLeftIcon,
-  ThumbsUpIcon,
-} from "lucide-react";
+import { ArchiveIcon, MoveLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { IssueCommentsList } from "../_components/issue-coments-list";
 import { Suspense } from "react";
 import { IssueCommentsSkeleton } from "../_components/issue-comments-skeleton";
-import { Input } from "@/components/input";
+import { IssueLikeButton } from "../_components/issue-like-button";
+import {
+  CreateCommentSchema,
+  IssueCommentForm,
+} from "../_components/issue-comment-form";
+import { createComment } from "@/services/create-comment";
+import { authClient } from "@/lib/auth-client";
+import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export const generateMetadata = async ({ params }: IssuePageProps) => {
   const { id } = await params;
@@ -30,6 +32,14 @@ interface IssuePageProps {
 export default async function IssuePage({ params }: IssuePageProps) {
   const { id } = await params;
 
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      headers: await headers(),
+    },
+  });
+
+  const isAuthenticated = !!session?.user;
+
   const issue = await getIssue({ id });
 
   const statusLabels = {
@@ -38,6 +48,14 @@ export default async function IssuePage({ params }: IssuePageProps) {
     in_progress: "Em Progresso",
     done: "Concluído",
   } as const;
+
+  const handleCreateComment = async (data: CreateCommentSchema) => {
+    "use server";
+
+    await createComment({ issueId: id, text: data.text });
+
+    revalidatePath(`/issues/${id}`);
+  };
 
   return (
     <main className="max-w-[900px] mx-auto w-full flex flex-col gap-4 p-6 bg-navy-800 border-[0.5px] border-navy-500 rounded-xl">
@@ -56,10 +74,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
           {statusLabels[issue.status]}
         </span>
 
-        <Button type="button">
-          <ThumbsUpIcon className="size-3" />
-          <span className="text-sm">{issue.comments}</span>
-        </Button>
+        <IssueLikeButton issueId={issue.id} />
       </div>
 
       <div className="space-y-2">
@@ -72,19 +87,10 @@ export default async function IssuePage({ params }: IssuePageProps) {
       <div className="flex flex-col gap-2">
         <span className="font-semibold ">Comentários</span>
 
-        <form className="relative w-full">
-          <Input
-            className="bg-navy-700 h-11 pr-24 w-full"
-            placeholder="Leave a comment..."
-          />
-          <button
-            type="submit"
-            className="flex items-center gap-2 text-indigo-400 absolute right-3 top-1/2 -translate-y-1/2 text-xs hover:text-indigo-300 cursor-pointer disabled:opacity-50"
-          >
-            Publicar
-            <MessageCirclePlusIcon className="size-3" />
-          </button>
-        </form>
+        <IssueCommentForm
+          onCreateComment={handleCreateComment}
+          isAuthenticated={isAuthenticated}
+        />
 
         <div className="mt-3">
           <Suspense fallback={<IssueCommentsSkeleton />}>

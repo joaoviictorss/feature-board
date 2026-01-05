@@ -4,12 +4,7 @@ import type { AuthSession } from "../auth";
 import { db } from "../db";
 import { issueLikes, issues } from "../db/schema";
 import { requireAuth } from "../middlewares/auth";
-
-const LikeResponseSchema = z.object({
-  id: z.uuidv4(),
-  likes: z.number().int(),
-  liked: z.boolean(),
-});
+import { LikeResponseSchema } from "./schemas/issue-likes";
 
 const ErrorSchema = z.object({
   error: z.string(),
@@ -79,7 +74,7 @@ export const toggleIssueLike = app.openapi(route, async (c) => {
         error: "Issue not found",
         message: `Issue with id ${id} does not exist`,
       },
-      404,
+      404
     );
   }
 
@@ -130,6 +125,6 @@ export const toggleIssueLike = app.openapi(route, async (c) => {
       likes: updatedIssue.likes,
       liked,
     },
-    200,
+    200
   );
 });
